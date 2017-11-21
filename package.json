@@ -1,0 +1,22 @@
+{
+  "name": "funky-chat-server",
+  "version": "1.0.0",
+  "description": "A funky chat server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tikotus/funky-chat-server.git"
+  },
+  "author": "Johannes Ahvenniemi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tikotus/funky-chat-server/issues"
+  },
+  "homepage": "https://github.com/tikotus/funky-chat-server#readme",
+  "dependencies": {
+    "socket.io": "^2.0.4"
+  }
+}
