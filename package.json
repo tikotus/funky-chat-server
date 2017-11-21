@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/tikotus/funky-chat-server#readme",
   "dependencies": {
+    "immutable": "^3.8.2",
     "socket.io": "^2.0.4"
   }
 }
