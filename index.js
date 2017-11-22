@@ -13,12 +13,12 @@ let connections = []
 let idCounter = 0;
 io.on('connection', client => {
   const clientId = ++idCounter
-  let name = "unknown"
+  let name = 'Guest' + idCounter
 
   connections.push(client)
-  client.on('init', name => {
+  client.on('init', () => {
     client.removeAllListeners('init')
-    updateState(state.update("clients", v => v.push({ name, clientId })))
+    updateState(state.update("clients", v => v.push({ name: name, clientId })))
     
     client.on('changeName', val => {
       name = val
@@ -30,7 +30,7 @@ io.on('connection', client => {
     
     })
     client.on('message', (msg, chan) => { 
-      client.to(chan).emit('message', name, msg, chan)
+      io.to(chan).emit('message', name, msg, chan)
     })
   })
 
