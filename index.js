@@ -18,7 +18,7 @@ io.on('connection', client => {
   connections.push(client)
   client.on('init', () => {
     client.removeAllListeners('init')
-    updateState(state.update("clients", v => v.push({ name: name, clientId })))
+    updateState(state.update('clients', v => v.push({ name: name, clientId })))
     
     client.on('changeName', val => {
       name = val
@@ -38,8 +38,8 @@ io.on('connection', client => {
     const index = connections.indexOf(client)
     connections.splice(index, 1)
     updateState(state
-      .update("clients", seq => seq.filter(v => v.clientId != clientId))
-      .update("channels", channels => channels.map(chan => removeClientFromChannel(chan, clientId))))
+      .update('clients', seq => seq.filter(v => v.clientId != clientId))
+      .update('channels', channels => channels.map(chan => removeClientFromChannel(chan, clientId))))
   })
 });
 
@@ -49,13 +49,13 @@ function updateState(newState) {
 }
 
 function changeClientName(clientId) {
-  return state.setIn(["clients", state.clients.findIndex(c => c.clientId == clientId), name], name)
+  return state.setIn(['clients', state.clients.findIndex(c => c.clientId == clientId), name], name)
 }
 
 function removeClientFromChannel(channel, clientId) {
-  return channel.update("joinedClientIds", ids => ids.filter(id => id != clientId))
+  return channel.update('joinedClientIds', ids => ids.filter(id => id != clientId))
 }
 
 function addClientToChannel(clientId, chan) {
-  return state.updateIn(["channels", chan, "joinedClientIds"], List(), v => v.push(clientId))
+  return state.updateIn(['channels', chan, 'joinedClientIds'], List(), v => v.push(clientId))
 }
