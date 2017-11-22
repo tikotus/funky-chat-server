@@ -30,7 +30,7 @@ io.on('connection', client => {
     
     })
     client.on('message', (msg, chan) => { 
-      client.to(chan).emit('message', client.name, msg) 
+      client.to(chan).emit('message', name, msg, chan)
     })
   })
 
