@@ -16,18 +16,18 @@ io.on('connection', client => {
   let name = 'Guest' + idCounter
 
   connections.push(client)
-  client.on('init', () => {
+  client.on('init', fn => {
     client.removeAllListeners('init')
-    updateState(state.update('clients', v => v.push({ name: name, clientId })))
+    updateState(state.update('clients', v => v.push(fromJS({ name: name, clientId }))))
+    fn(clientId)
     
-    client.on('changeName', val => {
+    client.on('nick', val => {
       name = val
       updateState(changeClientName(clientId, name))
     })
     client.on('join', chan => {
       client.join(chan)
       updateState(addClientToChannel(clientId, chan))
-    
     })
     client.on('message', (msg, chan) => { 
       io.to(chan).emit('message', name, msg, chan)
@@ -48,8 +48,8 @@ function updateState(newState) {
   connections.forEach(c => c.emit('changeState', state.toJS()))
 }
 
-function changeClientName(clientId) {
-  return state.setIn(['clients', state.clients.findIndex(c => c.clientId == clientId), name], name)
+function changeClientName(clientId, name) {
+  return state.setIn(['clients', state.get('clients').findIndex(c => c.clientId == clientId), 'name'], name)
 }
 
 function removeClientFromChannel(channel, clientId) {
