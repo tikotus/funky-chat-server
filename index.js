@@ -8,14 +8,11 @@ let state = fromJS({
   clients: []
 })
 
-let connections = []
-
 let idCounter = 0;
 io.on('connection', client => {
   const clientId = ++idCounter
   let name = 'Guest' + idCounter
 
-  connections.push(client)
   client.on('init', fn => {
     client.removeAllListeners('init')
     updateState(state.update('clients', v => v.push(fromJS({ name: name, clientId }))))
@@ -35,8 +32,6 @@ io.on('connection', client => {
   })
 
   client.on('disconnect', reason => {
-    const index = connections.indexOf(client)
-    connections.splice(index, 1)
     updateState(state
       .update('clients', seq => seq.filter(v => v.clientId != clientId))
       .update('channels', channels => channels.map(chan => removeClientFromChannel(chan, clientId))))
@@ -45,7 +40,7 @@ io.on('connection', client => {
 
 function updateState(newState) {
   state = newState
-  connections.forEach(c => c.emit('changeState', state.toJS()))
+  io.emit('changeState', state.toJS())
 }
 
 function changeClientName(clientId, name) {
