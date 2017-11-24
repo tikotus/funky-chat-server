@@ -36,9 +36,9 @@ io.on('connection', client => {
     })
   })
 
-  client.on('disconnect', reason => {
+  client.on('disconnect', () => {
     updateState(state
-      .update('clients', seq => seq.filter(v => v.clientId != clientId))
+      .update('clients', seq => seq.filter(v => v.get('clientId') != clientId))
       .update('channels', channels => channels.map(chan => removeClientFromChannel(chan, clientId))))
   })
 });
