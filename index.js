@@ -1,4 +1,4 @@
-const { fromJS, toJS, List } = require('immutable')
+const { fromJS, toJS, List, Map } = require('immutable')
 const io = require('socket.io')(3000, {
   serveClient: false,
 });
@@ -7,6 +7,8 @@ let state = fromJS({
   channels: {},
   clients: []
 })
+
+let messages = Map()
 
 let idCounter = 0;
 io.on('connection', client => {
@@ -17,7 +19,7 @@ io.on('connection', client => {
     client.removeAllListeners('init')
     updateState(state.update('clients', v => v.push(fromJS({ name: name, clientId }))))
     fn(clientId)
-    
+
     client.on('nick', val => {
       name = val
       updateState(changeClientName(clientId, name))
@@ -25,8 +27,11 @@ io.on('connection', client => {
     client.on('join', chan => {
       client.join(chan)
       updateState(addClientToChannel(clientId, chan))
+      if (messages.get(chan))
+        client.emit('messages', messages.get(chan).toJS(), chan)
     })
-    client.on('message', (msg, chan) => { 
+    client.on('message', (msg, chan) => {
+      messages = messages.update(chan, List(), v => v.push({ sender: name, text: msg }))
       io.to(chan).emit('message', name, msg, chan)
     })
   })
