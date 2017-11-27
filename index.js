@@ -49,7 +49,7 @@ function updateState(newState) {
 }
 
 function changeClientName(clientId, name) {
-  return state.setIn(['clients', state.get('clients').findIndex(c => c.clientId == clientId), 'name'], name)
+  return state.setIn(['clients', state.get('clients').findIndex(c => c.get('clientId') == clientId), 'name'], name)
 }
 
 function removeClientFromChannel(channel, clientId) {
