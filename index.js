@@ -24,22 +24,22 @@ io.on('connection', client => {
       name = val
       updateState(changeClientName(clientId, name))
     })
-    client.on('join', chan => {
-      client.join(chan)
-      updateState(addClientToChannel(clientId, chan))
-      if (messages.get(chan))
-        client.emit('messages', messages.get(chan).toJS(), chan)
+    client.on('join', channelName => {
+      client.join(channelName)
+      updateState(addClientToChannel(clientId, channelName))
+      if (messages.get(channelName))
+        client.emit('messages', messages.get(channelName).toJS(), channelName)
     })
-    client.on('message', (msg, chan) => {
-      messages = messages.update(chan, List(), v => v.push({ sender: name, text: msg }))
-      io.to(chan).emit('message', name, msg, chan)
+    client.on('message', (msg, channelName) => {
+      messages = messages.update(channelName, List(), v => v.push({ sender: name, text: msg }))
+      io.to(channelName).emit('message', name, msg, channelName)
     })
   })
 
   client.on('disconnect', () => {
     updateState(state
       .update('clients', seq => seq.filter(v => v.get('clientId') != clientId))
-      .update('channels', channels => channels.map(chan => removeClientFromChannel(chan, clientId))))
+      .update('channels', channels => channels.map(channel => removeClientFromChannel(channel, clientId))))
   })
 });
 
@@ -56,6 +56,6 @@ function removeClientFromChannel(channel, clientId) {
   return channel.update('joinedClientIds', ids => ids.filter(id => id != clientId))
 }
 
-function addClientToChannel(clientId, chan) {
-  return state.updateIn(['channels', chan, 'joinedClientIds'], List(), v => v.push(clientId))
+function addClientToChannel(clientId, channelName) {
+  return state.updateIn(['channels', channelName, 'joinedClientIds'], List(), v => v.push(clientId))
 }
